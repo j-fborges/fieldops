@@ -1,0 +1,52 @@
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+*.egg
+.eggs/
+dist/
+build/
+*.whl
+.venv/
+venv/
+env/
+
+# ===== Node / React / Vite =====
+node_modules/
+dist/
+*.tsbuildinfo
+.vite/
+
+# ===== Environment =====
+.env
+.env.*
+!.env.example
+
+# ===== Docker =====
+docker-compose.override.yml
+
+# ===== IDE / Editor =====
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+
+# ===== Local data =====
+data/
+
+# ===== Logs =====
+*.log
+logs/
+
+# ===== Coverage / Test =====
+coverage/
+htmlcov/
+.pytest_cache/
+.coverage
+*.cover

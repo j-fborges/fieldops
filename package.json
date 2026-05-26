@@ -1,0 +1,5 @@
+{
+  "name": "fieldops",
+  "private": true,
+  "workspaces": ["packages/*"]
+}

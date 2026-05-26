@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  # ===== Infra =====
+  postgres:
+    image: postgres:16-alpine
+    # Database: PostgreSQL (primary store)
+
+  redis:
+    image: redis:7-alpine
+    # Cache / idempotency keys / light queues
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    # Async job broker (Celery)
+
+  minio:
+    image: minio/minio:latest
+    # Object storage (S3-compatible)
+
+  # ===== Application =====
+  backend:
+    build: packages/backend
+    # FastAPI (Python)
+
+  admin:
+    build: packages/admin
+    # React SPA (TypeScript + Vite)
+
+  pwa:
+    build: packages/pwa
+    # React PWA (TypeScript + Vite + Service Worker)
