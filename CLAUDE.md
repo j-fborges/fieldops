@@ -8,7 +8,7 @@ It connects three actors: administrative operators (web admin), field technician
 
 ## Architecture at a Glance
 - **Monorepo** with 3 packages: `backend/` (FastAPI), `admin/` (React SPA), `pwa/` (React PWA)
-- **Backend**: Python FastAPI + SQLAlchemy + Celery + RabbitMQ + PostgreSQL + Redis + MinIO
+- **Backend**: Python FastAPI + SQLAlchemy + Celery workers (RabbitMQ broker) + PostgreSQL + Redis (cache/idempotency/light queues) + MinIO/S3 (media)
 - **Admin Frontend**: React + Vite + TypeScript + Tailwind CSS + Redux Toolkit + RTK Query
 - **PWA Frontend**: React + Vite + TypeScript + Tailwind CSS + Dexie.js + Service Worker
 - **Public page** (`/v/:token`) is served by the Admin frontend as a route
