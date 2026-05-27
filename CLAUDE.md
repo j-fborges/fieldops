@@ -44,3 +44,4 @@ It connects three actors: administrative operators (web admin), field technician
 - **Commit tracking, current phase, and next steps belong exclusively in `CLAUDE.local.md`.**
 - Never add "Completed Commits", "Current Phase", or "Next Steps" sections to this file.
 - `CLAUDE.local.md` is the working document for transient task tracking; this file is the stable project reference.
+- **The user always commits manually.** Never run `git commit` or `git add` — just stage changes and let the user commit themselves.
