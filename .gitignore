@@ -50,3 +50,7 @@ htmlcov/
 .pytest_cache/
 .coverage
 *.cover
+
+# ===== Local Claude Code =====
+CLAUDE.local.md
+.claude/

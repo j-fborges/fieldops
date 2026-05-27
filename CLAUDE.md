@@ -27,6 +27,11 @@ It connects three actors: administrative operators (web admin), field technician
 8. **Redux Toolkit + RTK Query + Dexie.js** for unified state management
 9. **REST + OpenAPI** for API contract, consumed by RTK Query
 
+## Development Environment
+- Backend uses Python 3.12+ with a virtual environment at `packages/backend/.venv/`
+- Activate with `source packages/backend/.venv/bin/activate` before running backend commands
+- `.venv/` is gitignored and never committed
+
 ## Code Conventions
 - **All code in English**: variables, functions, classes, comments, commit messages
 - **Documentation in Portuguese**: README, NOTAS.md, architecture docs, ADRs
@@ -35,43 +40,7 @@ It connects three actors: administrative operators (web admin), field technician
 - **Formatting**: Prettier (frontend), Black (backend), 2 spaces (frontend), 4 spaces (backend)
 - **Linting**: ESLint (frontend), Flake8 + mypy (backend)
 
-## Commit 1 — Monorepo Initialization (complete)
-- Root `package.json`, `.gitignore`, `docker-compose.yml`, `README.md`, and empty package directories created.
-
-## Current Phase — Commit 2: Backend Initialization
-
-### What to do
-- Create `packages/backend/pyproject.toml` with FastAPI + core dependencies
-- Create `packages/backend/requirements.txt` with pinned dependencies
-- Create `packages/backend/.env.example`
-- Create `packages/backend/app/__init__.py`
-- Create `packages/backend/app/main.py` (minimal health-check only)
-
-### Dependencies
-- fastapi, uvicorn[standard]
-- sqlalchemy, alembic, asyncpg
-- celery, kombu
-- redis, python-dotenv
-- pydantic, pydantic-settings
-- httpx (dev/test)
-
-### File Structure (after commit)
-```
-packages/backend/
-├── pyproject.toml
-├── requirements.txt
-├── .env.example
-└── app/
-    ├── __init__.py
-    └── main.py
-```
-
-### Rules
-- Do NOT create database models yet
-- Do NOT configure Celery workers yet
-- Keep `main.py` minimal (health check endpoint only)
-- Python 3.12+
-
-## Next Steps (after commit)
-- Commit 3: `chore(admin): init React+Vite SPA with Tailwind and dependencies`
-- Commit 4: `chore(pwa): init React+Vite PWA with Tailwind and dependencies`
+## Notes for Claude
+- **Commit tracking, current phase, and next steps belong exclusively in `CLAUDE.local.md`.**
+- Never add "Completed Commits", "Current Phase", or "Next Steps" sections to this file.
+- `CLAUDE.local.md` is the working document for transient task tracking; this file is the stable project reference.
