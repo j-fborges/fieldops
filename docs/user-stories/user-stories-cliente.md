@@ -23,7 +23,7 @@ de tokens inválidos.
 
 ## Diagrama de Sequência
 
-
+```mermaid
 sequenceDiagram
     actor C as Cliente
     participant PV as Página Pública (React)
@@ -35,7 +35,7 @@ sequenceDiagram
     C->>PV: Acessa link /v/<token> (via SMS/e-mail)
     Note over PV: **Tela de Carregamento**<br>Spinner ou esqueleto
     PV->>API: GET /v/<token>
-    API->>DB: SELECT visita (status, técnico, janela) e eventos públicos (sem fotos/obs)
+    API->>DB: SELECT visita (status, técnico, janela)<br>e eventos públicos (descricao_publica, sem fotos/obs interna)
     DB-->>API: Dados (ou vazio)
     alt Token inválido ou visita inexistente
         API-->>PV: 404 Not Found
@@ -43,14 +43,15 @@ sequenceDiagram
     else Token válido
         API-->>PV: 200 OK (dados públicos da visita)
         Note over PV: **Tela de Status da Visita**<br>Componentes:
-        Note over PV: Indicador de Status da Visita Atual(badge): Agendado/Em andamento/Concluído/Cancelado
+        Note over PV: Indicador de Status da Visita Atual (badge):<br>Agendado/Em andamento/Concluído/Cancelado
         Note over PV: Nome do técnico designado
-        Note over PV: Janela prevista Para Próximo evento:<br>• data e horário estimado,<br>• Descrição curta(baseada no Tipo de Evento),<br>• Tipo de evento
-        Note over PV: Feed vertical - Linha do tempo de Eventos da Visita, com campos:<br>• data/hora,<br>• Descrição curta(baseada no Tipo de Evento),<br>• Tipo de evento,<br>• Assinatura do Cliente Coletada?(Booleano),<br>• Observação
+        Note over PV: Janela prevista para próximo evento:<br>• data e horário estimado,<br>• Descrição curta (baseada no Tipo de Evento),<br>• Tipo de evento
+        Note over PV: Feed vertical - Linha do tempo de Eventos da Visita,<br>com campos:<br>• data/hora,<br>• Descrição pública do evento,<br>• Tipo de evento,<br>• ??Assinatura do Cliente Coletada? (Booleano)??
     end
 
     Note over C,DB: FIM C01 / INÍCIO C02 e C03 — Visualização e Segurança
 
-    Note over PV: LGPD(Proteção de dados do Técnico e Cliente):<br>A tela já exibida contém apenas informações públicas.<br>Não há fotos, observações internas ou dados sensíveis.
+    Note over PV: LGPD (Proteção de dados do Técnico e Cliente):<br>A tela já exibida contém apenas informações públicas.<br>Não há fotos, observações internas ou dados sensíveis.
     Note over PV: O cliente pode recarregar a página para atualizar o status.
     Note over C,DB: FIM C02/C03 — Fluxo do Cliente completo
+```

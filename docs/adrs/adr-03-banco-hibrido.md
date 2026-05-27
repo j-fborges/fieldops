@@ -36,10 +36,11 @@ de mídia.**
   (eventos de visita, métricas de SLA).
 
 - RabbitMQ oferece garantias de entrega, tolerância a falhas e roteamento avançado para
-  tarefas assíncronas de longa duração (processamento de fotos, notificações).
+  tarefas assíncronas de longa duração (processamento de fotos, notificações) e garantindo que jobs críticos não sejam perdidos.
 
 - Redis resolve baixíssima latência para verificação de idempotência, cache de tokens e
-  sessões, além de filas pub/sub leves.
+  sessões, além de filas pub/sub leves. Não é utilizado como broker de tarefas assíncronas —
+  essa responsabilidade é exclusiva do RabbitMQ.
 
 - MinIO/S3 é a prática recomendada para armazenamento de arquivos, desacoplando a API do
   disco e permitindo escalabilidade independente.
@@ -53,13 +54,14 @@ de mídia.**
 
 - Cada camada utiliza a ferramenta especializada, maximizando performance e custo-benefício.
 - PostgreSQL garante integridade transacional e consultas complexas (filtros, relatórios).
-- RabbitMQ garante entrega confiável de tarefas assíncronas.
+- RabbitMQ garante entrega confiável de tarefas assíncronas com garantias de durabilidade.
 - Redis reduz carga no banco principal e viabiliza operações de baixa latência.
 - A separação da mídia em object storage simplifica backups e conformidade LGPD.
 
 ### Negativas
 
-- Complexidade operacional: quatro serviços para gerenciar, monitorar e manter.
+- Complexidade operacional: quatro serviços (PostgreSQL, Redis, RabbitMQ, MinIO) para
+  gerenciar, monitorar e manter.
 - Necessidade de conhecimento da equipe em múltiplas tecnologias.
 - Risco de inconsistência em caso de falha entre PostgreSQL e Redis (mitigado por padrões
   como cache-aside e uso de transações).

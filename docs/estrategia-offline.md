@@ -113,6 +113,9 @@ A UI consome SyncState para exibir o badge de pendências e a barra de progresso
    - Remove operações bem‑sucedidas da fila.
    - Para conflitos, marca a operação como 'rejected' e cria um TicketResolucao associado.
    - Atualiza o cache de visitas/eventos com os dados mais recentes.
+   - A verificação de conflitos pendentes em uma visita é feita sob demanda pelo método
+     `possuiConflitosPendentes()`, que consulta a existência de TicketResolucao com
+     status 'aberto' vinculado à visita, sem depender de flag derivada.
 
 ### 3.3 Upload de fotos
 

@@ -32,6 +32,7 @@ experiência do técnico.
 
 ## Diagrama de Sequência
 
+```mermaid
 sequenceDiagram
     actor T as Técnico de Campo
     participant PWA as PWA UI (React + Service Worker)
@@ -67,7 +68,7 @@ sequenceDiagram
     Note over T,S3: FIM T01 / INÍCIO T02 — Minhas Visitas do Dia (offline)
 
     PWA->>PWA: Verifica conectividade
-    Note over PWA: Na barra Superior do App:<br>Icone de Conectividade (ícone de relógio ou nuvem cortada)<br>Contador de itens na fila
+    Note over PWA: Na barra Superior do App:<br>Ícone de Conectividade (ícone de relógio ou nuvem cortada)<br>Contador de itens na fila
     note over PWA: Pull-to-refresh (se online)
     alt Online (primeira carga ou reconectado)
         PWA->>API: GET /api/tecnicos/me/visitas?data=hoje
@@ -79,9 +80,9 @@ sequenceDiagram
         PWA->>IDB: Busca visitas do dia
         IDB-->>PWA: Lista de visitas armazenadas
     end
-    Note over PWA: **Tela "Minhas Visitas"**<br>Lista de cards:<br>• Cliente, Endereço<br>• Horário previsto<br>• Tipo de serviço (instalação/manutenção/vistoria)<br>• Status (Agendado/Em andamento/Concluído)<br>•Status Sincronização (Pendente/Falhou/Recusada)
+    Note over PWA: **Tela "Minhas Visitas"**<br>Lista de cards:<br>• Cliente, Endereço<br>• Horário previsto<br>• Tipo de serviço (instalação/manutenção/vistoria)<br>• Status (Agendado/Em andamento/Concluído)<br>• Status Sincronização (Pendente/Falhou/Recusada)
     note over PWA: Fallbacks de estado vazio (sem visitas)/Loading
-    
+
     Note over T,S3: FIM T02 / INÍCIO T03 — Iniciar Visita (offline)
 
     Note over PWA: Card em Tela Minhas Visitas
@@ -89,35 +90,35 @@ sequenceDiagram
     T->>PWA: Toca "Iniciar" em uma visita
     Note over PWA: Confirmação rápida (modal/toast)
     opt ??Assinatura Opcional do Cliente??
-    Note over PWA: ??Coleta Assinatura do Cliente(Para Evento de Início)??
-    PWA->>PWA: ??Verifica se há assinatura do Cliente??
-    note over PWA: Formulário com Campos:<br>• Desenho da assinatura,<br>• Timestamp início(prépreenchido automáticamente),<br>• Local(prépreenchido automáticamente)
+        Note over PWA: ??Coleta Assinatura do Cliente (Para Evento de Início)??
+        PWA->>PWA: ??Verifica se há assinatura do Cliente??
+        note over PWA: Formulário com Campos:<br>• Desenho da assinatura,<br>• Timestamp início (pré-preenchido automaticamente),<br>• Local (pré-preenchido automaticamente)
     end
     T->>PWA: Confirma início
     Note over PWA: **Tela de Visita**
     PWA->>IDB: Cria evento local "iniciado"<br>timestamp = now()
     PWA->>IDB: Atualiza status da visita → "Em andamento"
-    Note over PWA: Atualiza card da visita: <br>• Status - "Em andamento"<br>• timestamp local de início,<br>• Sincronização Pendente? (Badge).
+    Note over PWA: Atualiza card da visita:<br>• Status - "Em andamento"<br>• timestamp local de início,<br>• Sincronização Pendente? (Badge).
     PWA->>PWA: Checa se está Offline??
     PWA->>IDB: Registra Operação<br>(tipo: iniciar, visita_id, timestamp)
     IDB->>IDB: Operação Offline??
     IDB->>Fila: Adiciona operação pendente<br>(tipo: iniciar, visita_id, timestamp)
     Note over PWA: Badge de Sincronização Pendente (relógio)
-    Note over PWA: Na barra Superior do App:<br>Icone de Conectividade (ícone de relógio ou nuvem cortada)<br>Contador de itens na fila
+    Note over PWA: Na barra Superior do App:<br>Ícone de Conectividade (ícone de relógio ou nuvem cortada)<br>Contador de itens na fila
     Fila-->>PWA: Visita iniciada (salva localmente)
 
     Note over T,S3: FIM T03 / INÍCIO T04 e T05 — Concluir Visita com Obs. e Fotos (e Assinatura do Cliente??) (offline)
-    
+
     Note over PWA: **Tela de Visita**
     note over PWA: Botão "Concluir atendimento" (no card)
     T->>PWA: Abre visita "Em andamento"<br>e toca "Concluir atendimento"
-    Note over PWA: **Tela de Conclusão de Atendimento** 
+    Note over PWA: **Tela de Conclusão de Atendimento**
     Note over PWA: Formulário com campos:<br>• Observação (textarea)<br>• Botão: "Adicionar foto" (câmera/galeria)<br>• Grade de miniaturas das Fotos Adicionadas
-    
+
     opt ??Assinatura Opcional do Cliente??
-    Note over PWA: ??Coleta Assinatura do Cliente(Para Evento de Conclusão)??
-    PWA->>PWA: ??Verifica se há assinatura do Cliente??
-    note over PWA: Formulário com Campos:<br>• Desenho da assinatura,<br>• Timestamp início(prépreenchido automáticamente),<br>• Local(prépreenchido automáticamente)
+        Note over PWA: ??Coleta Assinatura do Cliente (Para Evento de Conclusão)??
+        PWA->>PWA: ??Verifica se há assinatura do Cliente??
+        note over PWA: Formulário com Campos:<br>• Desenho da assinatura,<br>• Timestamp conclusão (pré-preenchido automaticamente),<br>• Local (pré-preenchido automaticamente)
     end
 
     T->>PWA: Preenche observação
@@ -130,16 +131,16 @@ sequenceDiagram
     PWA->>IDB: Atualiza status da visita → "Pendente sincronização"
     PWA->>Fila: Adiciona operação pendente<br>(tipo: concluir, payload: obs + fotos)
     Note over PWA: Toast: "Visita salva localmente.<br>Sincronização pendente."
-    Note over PWA: Card da visita mostra:<br>• Status da Visita "Visita Concluida",<br>• Status de Sincronização: Sincronização Pendente(Ícone de nuvem cortada)
-    Note over PWA: Na barra Superior do App:<br>Icone de Conectividade (ícone de relógio ou nuvem cortada)<br>Contador de itens na fila SOBE DE VALOR
-    
+    Note over PWA: Card da visita mostra:<br>• Status da Visita "Visita Concluída",<br>• Status de Sincronização: Sincronização Pendente (Ícone de nuvem cortada)
+    Note over PWA: Na barra Superior do App:<br>Ícone de Conectividade (ícone de relógio ou nuvem cortada)<br>Contador de itens na fila SOBE DE VALOR
+
     Note over T,S3: FIM T04/T05 / INÍCIO T06 — Fila de Sincronização
 
     Note over PWA: Na barra Superior do App:<br>Clica ícone de Conectividade + Contador de Pendências de Sincronização
     T->>PWA: Clica Botão "Painel de Pendências"
     PWA-->>T: Redireciona para Painel de Pendências
     Note over PWA: **Painel de Pendências de Sincronização**
-    Note over PWA: Tabela de Pendências de Sincronização - campos:<br>• Id da Visita,<br>• Tipo de ação + Ícone(iniciar/concluir),<br>• Nome do cliente,<br>• Horário local da ação<br>• Status Ultima Tentativa de Sincronização(pendente, falhou, rejeitada),<br>• Motivo de falha,<br>• Botão "Tentar novamente" OU Botão "Abrir Ticket de Resolução"(Quando Rejeitada)
+    Note over PWA: Tabela de Pendências de Sincronização - campos:<br>• Id da Visita,<br>• Tipo de ação + Ícone (iniciar/concluir),<br>• Nome do cliente,<br>• Horário local da ação<br>• Status Última Tentativa de Sincronização (pendente, falhou, rejeitada),<br>• Motivo de falha,<br>• Botão "Tentar novamente" OU Botão "Abrir Ticket de Resolução" (Quando Rejeitada)
     PWA->>Fila: Lê todas as operações pendentes
     Fila-->>PWA: Lista de pendências
     Note over PWA: Exibe itens com opção<br>"Tentar novamente" (se falhou)
@@ -152,7 +153,6 @@ sequenceDiagram
     PWA->>Fila: Lê todas as operações pendentes<br>(ordenadas por timestamp)
     loop Para cada lote de operações
         PWA->>PWA: Gera idempotency-key (UUID)
-        PWA->>API: POST /api/sync<br>Header: Idempotency-Key<br>Body: lote de eventos (tipo, visita_id, payload, timestamp)
         Note over PWA: Barra de progresso:<br>"Sincronizando 3 de 5..."
         opt Token expirado (T09)
             API-->>PWA: 401 Unauthorized
@@ -164,17 +164,29 @@ sequenceDiagram
             else Refresh falha
                 Note over PWA: Toast: "Sessão expirada - Refresh de Token falhou"
                 Note over PWA: Na barra superior do App:<br>Ícone de Token desatualizado (Como Status de Conectividade)
-                Note over PWA: No topo da tela de Pedências de Sincronização, abaixo da barra superior:<br>Mensagem de Token desatualizado + Botão de nova tentativa
+                Note over PWA: No topo da tela de Pendências de Sincronização, abaixo da barra superior:<br>Mensagem de Token desatualizado + Botão de nova tentativa
                 opt Clica em Nova Tentativa
-                Note over PWA: Abre Modal de Reinserção de Credenciais de Login:<br>Sem Redirecionamento ou Logoff
-                T->>PWA: Insere Credenciais
-                PWA->>API: POST /auth/login (email, senha)
-                API-->>PWA: 200 OK (novo access token + novo refresh token)
-                PWA->>IDB: Atualiza token
-                PWA->>API: Retenta POST /api/sync
+                    Note over PWA: Abre Modal de Reinserção de Credenciais de Login:<br>Sem Redirecionamento ou Logoff
+                    T->>PWA: Insere Credenciais
+                    PWA->>API: POST /auth/login (email, senha)
+                    API-->>PWA: 200 OK (novo access token + novo refresh token)
+                    PWA->>IDB: Atualiza token
+                    PWA->>API: Retenta POST /api/sync
                 end
             end
         end
+
+        Note over PWA,S3: Upload de fotos pendentes (ADR 5)
+        loop Para cada operação com fotos
+            PWA->>API: POST /api/visitas/{id}/fotos/upload-url (storage_key, mime_type)
+            API-->>PWA: URL pré-assinada + storage_key
+            PWA->>S3: PUT foto (upload direto com URL pré-assinada)
+            S3-->>PWA: 200 OK
+            PWA->>API: POST /api/visitas/{id}/fotos/confirm (storage_key, tamanho, mime_type)
+            API-->>PWA: 201 Created (metadados registrados)
+        end
+
+        PWA->>API: POST /api/sync<br>Header: Idempotency-Key<br>Body: lote de eventos (tipo, visita_id, payload com URLs das fotos, timestamp)
         API->>Redis: Verifica idempotency-key
         alt Key nova
             Redis-->>API: Não existe
@@ -187,7 +199,7 @@ sequenceDiagram
             API-->>PWA: 200 OK (resultado anterior)
         end
         alt Evento processado com sucesso
-            PWA->>Fila: Remove operação da fila(Fila de Pendências de Sincronização)
+            PWA->>Fila: Remove operação da fila (Fila de Pendências de Sincronização)
             PWA->>IDB: Atualiza status da visita → "Concluída"<br>e salva resposta do servidor
             Note over PWA: Badge de check verde no card
         else Conflito (ex.: visita cancelada)
@@ -205,8 +217,7 @@ sequenceDiagram
     PWA-->>T: Exibe modal de conflito
     Note over PWA: **Modal de Conflito**<br>Mensagem: "A visita [cliente] foi cancelada<br>pelo escritório enquanto você estava offline.<br>Seu progresso não pôde ser salvo."<br>Botão: "Abrir Ticket de Resolução"
     opt Ao Abrir Ticket de Resolução
-    Note over PWA: Mock de Modal - Ticked de Resolução:<br>• Enviar Mensagem, <Br>• Ligar
-
+        Note over PWA: Mock de Modal - Ticket de Resolução:<br>• Enviar Mensagem,<br>• Ligar
     end
     T->>PWA: Dispensa modal
     PWA->>IDB: Atualiza status local → "Cancelada"
@@ -214,3 +225,4 @@ sequenceDiagram
     Note over PWA: Card da visita atualizado<br>Status: "Rejeitada" (vermelho)
 
     Note over T,S3: FIM T08 — Fluxo do Técnico completo
+```

@@ -36,10 +36,10 @@ modeladas e como os conflitos são detectados e tratados.
 - A chave de idempotência (UUID gerado localmente) evita duplicação de eventos.
 
 - Conflitos são detectados pelo servidor de forma determinística e retornados ao PWA, que
-  exibe uma interface clara de resolução (modal de conflito, ticket de resolução). Isso é
-  aceitável porque a taxa de conflitos esperada é baixa.
+  exibe um modal de conflito e cria automaticamente um TicketResolucao para rastreabilidade
+  e resolução pelo operador. Isso é aceitável porque a taxa de conflitos esperada é baixa.
 
-- Mais simples que CRDTs, adequado ao esforço do Desafio Tecnico.
+- Mais simples que CRDTs, adequado ao esforço do Desafio Técnico.
 
 ## Consequências
 
@@ -49,11 +49,12 @@ modeladas e como os conflitos são detectados e tratados.
 - Conflitos são tratados explicitamente, não mascarados por resolução automática.
 - Idempotência garante segurança mesmo com retentativas.
 - Implementação direta com IndexedDB (fila) e um endpoint /api/sync.
+- TicketResolucao fornece rastreabilidade completa e permite auditoria de decisões.
 
 ### Negativas
 
 - Em caso de conflito, o técnico não tem sua ação aplicada automaticamente; precisa de
-  intervenção (entrar em contato, abrir ticket).
+  intervenção do operador (abertura de ticket, aceitação ou rejeição das mudanças).
 - A latência de sincronização depende de o usuário estar online; não há resolução offline
   de conflitos.
 - Para cenários com alta taxa de conflitos (ex.: múltiplos técnicos na mesma visita), poderia

@@ -27,6 +27,7 @@ público para o cliente final acompanhar a visita sem autenticação.
 
 ## Diagrama de Sequência
 
+```mermaid
 sequenceDiagram
     actor A as Operador Administrativo
     participant W as Web Admin UI
@@ -41,20 +42,20 @@ sequenceDiagram
     Note over W: **Renderiza formulário**<br>Campos: Email/Usuário e Senha
     A->>W: Insere credenciais e submete
     W->>API: POST /auth/login (email, senha)
-    opt Operador não faz login(erro)
-    API->>DB: Valida credenciais (empresa/tecnico)
-    DB-->>API: Invalida
-    API-->>W: 401 ERROR (error code + message)
-    Note over W: Toast de Erro<br>Feedback de erro (sub-campo)
+    opt Operador não faz login (erro)
+        API->>DB: Valida credenciais
+        DB-->>API: Inválidas
+        API-->>W: 401 ERROR (error code + message)
+        Note over W: Toast de Erro<br>Feedback de erro (sub-campo)
     end
     opt Operador faz login
-    API->>DB: Valida credenciais (empresa/tecnico)
-    DB-->>API: Dados do usuário e perfil
-    API-->>W: 200 OK (token JWT access + refresh)
-    Note over W: Toast de Sucesso
-    W->>W: Armazena token (memória/localStorage seguro)
-    Note over W: Redirecionamento
-    W-->>A: Redireciona para dashboard
+        API->>DB: Valida credenciais
+        DB-->>API: Dados do usuário e perfil
+        API-->>W: 200 OK (access token + refresh token)
+        Note over W: Toast de Sucesso
+        Note over W: Armazena refresh token em cookie<br>httpOnly, Secure, SameSite<br>Access token em memória JavaScript
+        Note over W: Redirecionamento
+        W-->>A: Redireciona para dashboard
     end
 
     Note over A,S3: FIM A01 / INÍCIO A02 e A03 — Listar e Filtrar Visitas
@@ -64,9 +65,8 @@ sequenceDiagram
     API->>DB: SELECT visitas (todas, paginado)
     DB-->>API: Dados
     API-->>W: JSON com lista de visitas
-    Note over W: Tabela de visitas com campos:<br>• ID da Visita,<br>• Tipo de Visita,<br>• Cliente,<br>• Técnico de Campo,<br>• Data da Visita,<br>• Status,<br>
-    Note over W: • ??Possui Ticket de Resolução - Badge??<br>(booleano - quando Visita cancelada por Operador Administrativo e sincronizada por Tecnico de Campo)
-    Note over W: Paginação,Loading e Error fallback.
+    Note over W: Tabela de visitas com campos:<br>• ID da Visita,<br>• Tipo de Visita,<br>• Cliente,<br>• Técnico de Campo,<br>• Data da Visita,<br>• Status<br>• Badge "Possui Conflitos Pendentes"<br>(quando há TicketResolucao aberto)
+    Note over W: Paginação, Loading e Error fallback.
     A->>W: Seleciona filtros (data, técnico, status)
     Note over W: Barra de filtros - campos:<br>• input de ID,<br>• data inicial/final,<br>• dropdown de Tipo de Visita,<br>• dropdown de Cliente,<br>• dropdown de Técnico,<br>• dropdown de status
     W->>API: GET /api/visitas?tecnico=3&status=agendado&data=...
@@ -76,48 +76,48 @@ sequenceDiagram
     Note over W: Atualiza tabela com filtros aplicados
     A->>W: Seleciona Visita
 
-
     Note over A,S3: FIM A02/A03 / INÍCIO A04 — Ver Detalhes da Visita
 
     A->>W: Clica em uma visita específica
     W->>API: GET /api/visitas/123
-    API->>DB: SELECT visita + eventos + anexos (metadados)
+    API->>DB: SELECT visita + eventos + anexos (storage_key)
     DB-->>API: Dados completos
     API-->>W: JSON com timeline e URLs pré-assinadas das fotos
     W-->>A: Exibe detalhes: timeline, galeria de fotos
-    note over W: Tela de detalhe com:<br>
-    note over W: Cabeçalho de Visita - dados:<br>• ID da Visita,<br>• Tipo de Visita,<br>• Cliente,<br>• Técnico de Campo,<br>• Data da Visita,<br>• Status<br>
-    opt ??Resolução de conflitos com Sincronização do Tecnico de Campo??
-    W->>W: Possui Ticket de Resolução
-    note over W: Lista de Eventos em situação de Resolução de Conflito - campos:<br>• Observação do Técnico de Campo<br>• Dados do evento<br>• Botão Resolver
-    A->>W: Clica Botão Resolver
-    note over W: Modal Aceitar Mudanças e Eventos Sincronizados? (Aceitar/Rejeitar)
+    Note over W: Tela de detalhe com:<br>
+    Note over W: Cabeçalho de Visita - dados:<br>• ID da Visita,<br>• Tipo de Visita,<br>• Cliente,<br>• Técnico de Campo,<br>• Data da Visita,<br>• Status
+    opt ??Resolução de conflitos com Sincronização do Técnico de Campo??
+        W->>W: Exibe lista de Tickets de Resolução pendentes
+        Note over W: Lista de eventos conflitantes:<br>• Observação do Técnico<br>• Dados do evento<br>• Botão Resolver
+        A->>W: Clica Botão Resolver
+        Note over W: Modal: Aceitar/Rejeitar mudanças do técnico
+        W->>API: PATCH /api/tickets/{id} (resolucao_operador)
+        API-->>W: 200 OK (ticket atualizado)
     end
-    note over W: Feed de eventos da Visita:<br>• ID de Evento,<br>• Tipo de Evento,<br>• Data do Evento,<br>• Observação,<br>• ??Possui Assinatura do Cliente(Booleano)??,<br>• ??Imagem Assinatura do Cliente??,<br>• ??Lista de Fotos do Evento??
-    note over W: Galeria de fotos da Visita(thumbnails clicáveis)
-    note over W: Botão Voltar(para Visitas)
+    Note over W: Feed de eventos da Visita:<br>• ID de Evento,<br>• Tipo de Evento,<br>• Data do Evento,<br>• Descrição pública (se aplicável),<br>• Observação interna (apenas admin),<br>• ??Possui Assinatura do Cliente (Booleano)??,<br>• ??Imagem Assinatura do Cliente??,<br>• ??Lista de Fotos do Evento??
+    Note over W: Galeria de fotos da Visita (thumbnails clicáveis)
+    Note over W: Botão Voltar (para Visitas)
     W->>S3: Requisita imagens (URLs pré-assinadas)
     S3-->>W: Imagens
-    note over W: Lightbox da Galeria
+    Note over W: Lightbox da Galeria
+
     Note over A,S3: FIM A04 / INÍCIO A05 e A06 — Criar Visita e Token Público
 
-    note over W,A:Tela Visitas
+    Note over W,A: Tela Visitas
     A->>W: Acessa "Nova Visita"
-    note over W,A:Tela Nova Visita
-    note over W: Renderiza formulário com campos select:<br>• Tipo de Visita,<br>• Cliente,<br>• Técnico de Campo,<br>• Data da Visita
+    Note over W,A: Tela Nova Visita
+    Note over W: Renderiza formulário com campos select:<br>• Tipo de Visita,<br>• Cliente,<br>• Técnico de Campo,<br>• Data da Visita
     A->>W: Preenche dados (cliente, técnico, data, tipo)
-    note over W: Botão "Agendar"
+    Note over W: Botão "Agendar"
     A->>W: Submete formulário
     W->>API: POST /api/visitas (payload)
     API->>DB: BEGIN TRANSACTION
-    API->>DB: INSERT Visita + INSERT Evento ("agendado")
-    API->>Redis: Gera token público único (UUID aleatório)
-    Redis-->>API: Token
-    API->>DB: Atualiza Visita com token público
+    API->>API: Gera UUID v4 para token público
+    API->>DB: INSERT Visita (com token público) + INSERT Evento ("agendado")
     API->>DB: COMMIT
     API-->>W: 201 Created (dados da visita + token público)
-    note over W: Toast de Sucesso
-
-    note over W: Exibe confirmação e link público copiável (/v/<token>)
+    Note over W: Toast de Sucesso
+    Note over W: Exibe confirmação e link público copiável (/v/<token>)
 
     Note over A,S3: FIM A05/A06 — Fluxo do Admin completo
+```
