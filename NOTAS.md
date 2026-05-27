@@ -96,6 +96,12 @@ durante a implementação:
 - **Cliente — Exposição de assinatura na timeline pública:** `??Assinatura do
   Cliente Coletada? (Booleano)??` — se a assinatura for exibida como um indicador
   na página pública ou não, ainda é uma questão de produto/LGPD.
+- **ERD vs User Stories — Janela de horário:** As user stories C02 e T02 mencionam
+  "janela de horário prevista" para a visita, mas o ERD representa esse conceito
+  com apenas uma coluna `data_agendada` (timestamp único). Esta é uma simplificação
+  intencional para o MVP. Caso o feedback do piloto indique a necessidade de uma
+  janela explícita (início/fim), uma coluna `data_prevista_fim` poderá ser
+  adicionada na V1.
 
 Além disso, itens como notificações push, WebSocket, painel de pendências completo
 e integrações B2B estão fora do MVP por decisão consciente de escopo, registrada
@@ -162,17 +168,14 @@ encaminhar `/api` e `/v` ao backend (`localhost:8000`).
 ### Commit 4 — PWA Frontend Initialization
 Projeto Vite + React + TypeScript + Tailwind CSS + `vite-plugin-pwa` + Dexie.js
 em `packages/pwa/`. Manifesto PWA configurado (nome, cores, ícones placeholder).
-Placeholder para dashboard do técnico (`Dashboard.tsx`). Redux e Dexie adiados
-para commits futuros.
+Placeholder para dashboard do técnico (`Dashboard.tsx`)
 
 ### Commit 5 — Upgrade Frontend Dependencies (Tailwind v4, latest Vite/TS)
-Migração de Tailwind v3 + PostCSS para Tailwind v4 com o plugin nativo
-`@tailwindcss/vite`. Remoção de `postcss.config.js` e `tailwind.config.js`
-de ambos os frontends. `index.css` agora usa `@import "tailwindcss"`. Vite e
-TypeScript atualizados para as versões estáveis mais recentes. Ambos os pacotes
+Tailwind  Vite e TypeScript atualizados para as versões estáveis mais recentes. Ambos os pacotes
 (`admin` e `pwa`) foram atualizados simultaneamente para manter consistência.
 
----
+### Commits 6,7,8 — Adds Documentation and Refactors
 
+---
 
 ---

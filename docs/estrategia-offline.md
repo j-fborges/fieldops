@@ -297,6 +297,7 @@ classDiagram
     class EventoVisita {
         +string id
         +string visita_id
+        +string empresa_id
         +string tipo
         +string status_sincronizacao
         +string timestamp
@@ -311,6 +312,7 @@ classDiagram
     class Anexo {
         +string id
         +string evento_id
+        +string empresa_id
         +string tipo
         +string storage_key
         +number tamanho_bytes
@@ -321,6 +323,7 @@ classDiagram
     class TicketResolucao {
         +string id
         +string visita_id
+        +string empresa_id
         +string evento_conflitante_id
         +string status
         +string observacao_tecnico
@@ -332,6 +335,7 @@ classDiagram
     class TentativaSincronizacao {
         +string id
         +string evento_id
+        +string empresa_id
         +string timestamp
         +string resultado
         +string detalhes

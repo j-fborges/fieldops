@@ -45,3 +45,80 @@ It connects three actors: administrative operators (web admin), field technician
 - Never add "Completed Commits", "Current Phase", or "Next Steps" sections to this file.
 - `CLAUDE.local.md` is the working document for transient task tracking; this file is the stable project reference.
 - **The user always commits manually.** Never run `git commit` or `git add` — just stage changes and let the user commit themselves.
+
+## Documentation-Driven Development
+
+### Documentation as Source of Truth
+- All implementation decisions should preferably meet with the documentation in `./docs/`, or be flagged.
+- Before writing any feature, Claude must read the relevant ADR, ERD, and diagram.
+- If a proposed implementation contradicts the documentation, Claude must flag it
+  explicitly: "⚠️ This diverges from ADR-X / ERD. Should I proceed or adjust the docs first?"
+- Claude must never silently deviate from the documented architecture.
+
+The `./docs/` folder contains architecture reference for this project.
+Before generating any code that involves an architectural decision, Claude CAN:
+
+1. **Check for relevant ADRs** in `./docs/adrs/` — if a decision touches a topic
+   covered by an ADR, the ADR's conclusion is binding.
+2. **Consult the ERD** in `./docs/erd.md` — all database models,
+   relationships, indexes, and field names must match the ERD exactly.
+3. **Reference the Offline Strategy** in `./docs/estrategia-offline.md`
+   for any PWA, sync, or offline-related code.
+4. **Check the High-Level Architecture diagram** in `./docs/alto-nivel.md`
+   for component responsibilities and communication protocols.
+5. **Consult the User Stories diagrams** in `./docs/user-stories/user-stories-*.md`
+   for expected flows, UI states, and actor interactions.
+6. Cross-check for inconsistencies between docs files.
+7. Confirm with the user if any discrepancy is found before writing code.
+
+### Documentation Directory Structure
+```
+docs/
+├── adrs/                              # Architecture Decision Records (9 ADRs)
+│   ├── adr-01-fastapi-vs-django.md    # FastAPI chosen over Django
+│   ├── adr-02-sincronizacao-offline.md # Event queue with idempotency
+│   ├── adr-03-banco-hibrido.md        # PostgreSQL + Redis + RabbitMQ + MinIO
+│   ├── adr-04-multi-tenant.md         # Shared schema + tenant_id + RLS
+│   ├── adr-05-upload-midia.md         # Direct upload with pre-signed URL
+│   ├── adr-06-autenticacao.md         # JWT + RBAC
+│   ├── adr-07-notificacoes.md         # Multi-channel per actor
+│   ├── adr-08-gerenciamento-estado.md  # Redux Toolkit + RTK Query + Dexie
+│   └── adr-09-comunicacao-api.md      # REST + OpenAPI
+├── user-stories/                      # User story sequence diagrams
+│   ├── user-stories-admin.md          # 6 operator stories (A01-A06)
+│   ├── user-stories-cliente.md        # 3 end-client stories (C01-C03)
+│   └── user-stories-tecnico.md        # 9 field technician stories (T01-T09)
+├── alto-nivel.md                      # C4 container diagram + 12 components
+├── erd.md                             # 8 entities, indexes, hypertables, RLS
+├── estrategia-offline.md              # Offline sync strategy (Dexie, queue, conflicts)
+├── nao-funcionais.md                  # Performance, security, LGPD, observability, cost
+└── roadmap.md                         # MVP → V1 → V2 phases
+```
+
+### Mapping Portuguese (Docs) to English (Code)
+- All domain entities, attributes, and relationships are documented in Portuguese
+  (e.g., `Empresa`, `Visita`, `observacao_interna`).
+- When writing code, Claude must translate these to idiomatic English using
+  industry-standard conventions (PascalCase for classes/models, camelCase for
+  variables/functions, snake_case for Python attributes mirroring DB columns).
+- If unsure about the best English translation for a concept, Claude must propose
+  two options and let the user choose.
+- API endpoints retain Portuguese domain terms for consistency with the
+  documentation (e.g., `/api/visitas`).
+
+### Project File Map
+- `./docs/` — Architecture documentation, ADRs, diagrams, and reports.
+- `./CLAUDE.md` — Stable project reference (this file).
+- `./CLAUDE.local.md` — Transient working notes (gitignored).
+- `./NOTAS.md` — Development diary and decision log (committed).
+
+### NOTAS.md Update Rule
+- After every commit, Claude must append a brief entry to `./NOTAS.md` summarizing
+  what was accomplished in that commit, written in Portuguese, in narrative style.
+- The entry must be added under a `## Commits Recentes` or `## Diário de Commits`
+  section.
+- Claude must determine the previous commit message (via `git log -1 --oneline`) to
+  accurately describe the change.
+- The update is staged automatically but never committed — the user commits manually.
+
+

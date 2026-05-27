@@ -47,6 +47,13 @@ que equilibre segurança, economia e simplicidade operacional.
 - Operações simplificadas (um banco para fazer deploy, atualizar, monitorar).
 - Baixo custo de infraestrutura.
 - Adição instantânea de novos tenants.
+- **Desnormalização controlada para RLS:** todas as tabelas que pertencem a um
+  tenant incluem a coluna `empresa_id` diretamente, inclusive as tabelas filhas
+  (EventoVisita, Anexo, TentativaSincronizacao, TicketResolucao) que poderiam
+  obtê-la via JOIN com Visita. Esta duplicação controlada permite que as políticas
+  de RLS sejam escritas como condições triviais (`USING (empresa_id = current_setting('app.tenant_id'))`)
+  em todas as tabelas, sem dependência de subconsultas ou JOINs, melhorando a
+  performance e a legibilidade das políticas de segurança.
 
 ### Negativas
 

@@ -16,10 +16,10 @@ e Row-Level Security (RLS) para isolamento multi-tenant.
 | **Usuario** | Operadores administrativos e técnicos de campo | Autenticação e autorização (RBAC). O campo `role` define o nível de acesso. |
 | **Cliente** | Consumidor final (dono da planta solar) | Destinatário das visitas técnicas. Recebe link público para acompanhamento. |
 | **Visita** | Ordem de serviço agendada | Entidade central do sistema. Possui token público único para acesso do cliente final. |
-| **EventoVisita** | Cada mudança de estado da visita | Timeline de eventos (agendamento, início, conclusão, cancelamento). Pode ter origem online ou offline. |
-| **Anexo** | Fotos e assinaturas vinculadas a eventos | Armazenado no MinIO/S3, referenciado por `storage_key`. |
-| **TentativaSincronizacao** | Registro de cada tentativa de envio de evento | Auditoria de sincronização offline. Vinculada a um evento e a uma idempotency-key. |
-| **TicketResolucao** | Conflito detectado entre ações do técnico e do operador | Gerado quando uma sincronização é rejeitada (409). Resolvido pelo operador (aceitar/rejeitar). |
+| **EventoVisita** | Cada mudança de estado da visita | Timeline de eventos (agendamento, início, conclusão, cancelamento). Pode ter origem online ou offline. Inclui `empresa_id` para RLS direta. |
+| **Anexo** | Fotos e assinaturas vinculadas a eventos | Armazenado no MinIO/S3, referenciado por `storage_key`. Inclui `empresa_id` para RLS direta. |
+| **TentativaSincronizacao** | Registro de cada tentativa de envio de evento | Auditoria de sincronização offline. Vinculada a um evento e a uma idempotency-key. Inclui `empresa_id` para RLS direta. |
+| **TicketResolucao** | Conflito detectado entre ações do técnico e do operador | Gerado quando uma sincronização é rejeitada (409). Resolvido pelo operador (aceitar/rejeitar). Inclui `empresa_id` para RLS direta. |
 
 ## Separação de dados públicos e privados
 
@@ -58,6 +58,10 @@ mais frequentes:
 | Usuario | `(email)` | Único (B-tree) | Login por email (A01, T01) |
 | TicketResolucao | `(visita_id)` | B-tree | Consulta de tickets pendentes de uma visita (A04) |
 | TentativaSincronizacao | `(evento_id)` | B-tree | Histórico de tentativas de sincronização do evento |
+| EventoVisita | `(empresa_id)` | B-tree | Escopo de tenant para políticas RLS |
+| Anexo | `(empresa_id)` | B-tree | Escopo de tenant para políticas RLS |
+| TentativaSincronizacao | `(empresa_id)` | B-tree | Escopo de tenant para políticas RLS |
+| TicketResolucao | `(empresa_id)` | B-tree | Escopo de tenant para políticas RLS |
 
 ## TimescaleDB — Hypertables
 
@@ -93,6 +97,22 @@ aplica Row-Level Security (RLS) com políticas que garantem:
   pelo token público, que não requer autenticação.
 
 Esta abordagem está documentada em detalhes na ADR 4.
+
+## Nota sobre desnormalização controlada para RLS
+
+Todas as entidades que pertencem a um tenant incluem a coluna `empresa_id` diretamente,
+inclusive as tabelas filhas (EventoVisita, Anexo, TentativaSincronizacao, TicketResolucao)
+que poderiam obtê-la via JOIN com Visita. Esta é uma desnormalização controlada que permite:
+
+- Políticas de RLS triviais em todas as tabelas (`USING (empresa_id = current_setting('app.tenant_id'))`),
+  sem subconsultas ou JOINs.
+- Indexação direta por tenant para queries de escopo (ex.: listar todos os anexos de uma
+  empresa para auditoria).
+- Alinhamento com a ADR 4, que estabelece a RLS como camada obrigatória de segurança.
+
+O campo é preenchido automaticamente pela aplicação no momento da inserção, herdando o
+`empresa_id` da entidade pai (Visita ou EventoVisita) via trigger ou lógica de serviço,
+garantindo consistência sem expor a complexidade ao cliente da API.
 
 ## Nota sobre `possui_conflitos_pendentes`
 
@@ -148,6 +168,7 @@ erDiagram
     EventoVisita {
         uuid id PK
         uuid visita_id FK
+        uuid empresa_id FK
         enum tipo "agendado | iniciado | concluido | cancelado"
         enum status_sincronizacao "sincronizado | pendente | rejeitado"
         timestamp timestamp
@@ -162,6 +183,7 @@ erDiagram
     TentativaSincronizacao {
         uuid id PK
         uuid evento_id FK
+        uuid empresa_id FK
         timestamp timestamp
         enum resultado "sucesso | falha | conflito"
         text detalhes
@@ -171,6 +193,7 @@ erDiagram
     Anexo {
         uuid id PK
         uuid evento_id FK
+        uuid empresa_id FK
         enum tipo "foto | assinatura"
         string storage_key
         int tamanho_bytes
@@ -181,6 +204,7 @@ erDiagram
     TicketResolucao {
         uuid id PK
         uuid visita_id FK
+        uuid empresa_id FK
         uuid evento_conflitante_id FK
         enum status "aberto | aceito | rejeitado"
         text observacao_tecnico
