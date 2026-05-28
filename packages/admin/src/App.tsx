@@ -1,4 +1,5 @@
-import { Routes, Route } from 'react-router-dom';
+import { Route,Routes } from 'react-router-dom';
+
 import PublicStatusPage from './routes/PublicStatusPage';
 
 function App() {
@@ -10,9 +11,7 @@ function App() {
           path="/"
           element={
             <main className="flex items-center justify-center min-h-screen">
-              <h1 className="text-2xl font-bold text-gray-800">
-                FieldOps Admin
-              </h1>
+              <h1 className="text-2xl font-bold text-gray-800">FieldOps Admin</h1>
             </main>
           }
         />

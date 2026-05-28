@@ -9,6 +9,6 @@ app = FastAPI(
 
 
 @app.get("/health")
-async def health_check():
+async def health_check() -> dict[str, str]:
     """Health check endpoint. Returns 200 when the application is running."""
     return {"status": "ok"}

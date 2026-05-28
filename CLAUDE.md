@@ -40,11 +40,18 @@ It connects three actors: administrative operators (web admin), field technician
 - **Formatting**: Prettier (frontend), Black (backend), 2 spaces (frontend), 4 spaces (backend)
 - **Linting**: ESLint (frontend), Flake8 + mypy (backend)
 
+### Tool Command Rule
+When running lint/format/typecheck commands across packages, always prefix with the absolute path: `cd <absolute-package-path> && <command>`. Never rely on the shell's current working directory — it drifts between Bash invocations and causes silent failures (e.g., "No files matching the pattern").
+
+### Dependency Versioning
+Always pin to the latest stable versions for dependencies. Check `npm view <pkg> version` or `pip index versions <pkg>` before adding or bumping any dependency. Prefer caret ranges (`^`) for npm and minimum bounds (`>=`) for pip.
+
 ## Notes for Claude
 - **Commit tracking, current phase, and next steps belong exclusively in `CLAUDE.local.md`.**
 - Never add "Completed Commits", "Current Phase", or "Next Steps" sections to this file.
 - `CLAUDE.local.md` is the working document for transient task tracking; this file is the stable project reference.
-- **The user always commits manually.** Never run `git commit` or `git add` — just stage changes and let the user commit themselves.
+- **The user handles all git operations manually.** Never run `git add`, `git commit`, `git push`, or any other git command that modifies state. Just create/modify files and the user will stage, commit, and push themselves.
+- **Report issues and workarounds immediately.** When a tool fails, a dependency is incompatible, a config doesn't work as documented, or a workaround is needed — stop and report it to the user. Include: what was attempted, what failed, why, and the proposed alternative. Never silently resolve or route around problems without user visibility. This includes CWD drift, missing peer deps, broken build backends, and tool incompatibilities.
 
 ## Documentation-Driven Development
 

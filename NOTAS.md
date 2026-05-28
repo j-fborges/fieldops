@@ -176,6 +176,10 @@ Tailwind  Vite e TypeScript atualizados para as versões estáveis mais recentes
 
 ### Commits 6,7,8 — Adds Documentation and Refactors
 
----
+### Commit 9 — EditorConfig and Lint/Format Tooling
+Estabelece uma baseline de qualidade de código em todo o monorepo antes que o
+código de aplicação comece a crescer. Foi criado um `.editorconfig` na raiz.
+Nos dois frontends (`admin` e `pwa`) Prettier e ESLint. No backend Black e isort. Scripts `format`, `lint` e `typecheck` foram adicionados aos três pacotes. Todos os arquivos existentes foram formatados e a baseline está limpa:
+zero erros de lint, zero erros de tipo, zero diferenças de formatação.
 
 ---
