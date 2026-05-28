@@ -1,5 +1,32 @@
 {
   "name": "fieldops",
   "private": true,
-  "workspaces": ["packages/*"]
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "format": "npm run format -w packages/admin && npm run format -w packages/pwa && cd packages/backend && . .venv/bin/activate && black app tests && isort app tests",
+    "lint": "npm run lint -w packages/admin && npm run lint -w packages/pwa && cd packages/backend && . .venv/bin/activate && flake8 app tests",
+    "typecheck": "npm run typecheck -w packages/admin && npm run typecheck -w packages/pwa && cd packages/backend && . .venv/bin/activate && mypy app tests",
+    "test": "npm run test -w packages/admin && npm run test -w packages/pwa && cd packages/backend && . .venv/bin/activate && pytest",
+    "check": "npm run lint && npm run typecheck && npm run test",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.5"
+  },
+  "lint-staged": {
+    "packages/admin/src/**/*.{ts,tsx,json,css}": [
+      "npx --prefix packages/admin prettier --write",
+      "npx --prefix packages/admin eslint"
+    ],
+    "packages/pwa/src/**/*.{ts,tsx,json,css}": [
+      "npx --prefix packages/pwa prettier --write",
+      "npx --prefix packages/pwa eslint"
+    ],
+    "packages/backend/**/*.py": [
+      "packages/backend/.venv/bin/black",
+      "packages/backend/.venv/bin/isort",
+      "packages/backend/.venv/bin/flake8 --config packages/backend/.flake8"
+    ]
+  }
 }

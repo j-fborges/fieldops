@@ -187,4 +187,8 @@ Adiciona infraestrutura de testes nos três pacotes. Nos frontends (`admin` e
 `pwa`) foram instalados Vitest, React Testing Library, e smoke tests que renderizam o componente `App`. No backend, foi criado um smoke test com `pytest` que valida o
 endpoint `/health` retornando 200.
 
+### Commit 11 — Root Scripts, Pre-commit Hooks, and CI Pipeline
+Adicionado scripts de orquestração na raiz do monorepo (`format`, `lint`, `typecheck`, `test`, `check`) que executam as ferramentas em todos os pacotes. Foi adotado `Husky` + `lint-staged` para o **hook de pre-commit**, que verifica conflitos de merge, executa formatadores e linters nos arquivos staged, e em seguida roda typecheck e testes completos. O pipeline de CI (GitHub Actions) foi configurado.
+Adicionado servidor RAG de suporte (`rag-code-mcp`) para leitura otimizada da documentação pelo Claude Code.
+
 ---

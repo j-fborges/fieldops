@@ -78,6 +78,12 @@ Before generating any code that involves an architectural decision, Claude CAN:
 6. Cross-check for inconsistencies between docs files.
 7. Confirm with the user if any discrepancy is found before writing code.
 
+### Documentation RAG (Local)
+- Project documentation is indexed locally with `code-rag-mcp` (index name: `fieldops-docs`).
+- When you need to consult architecture decisions, ERD, or diagrams, **call the `search_docs` tool first** before reading entire files.
+- Only fall back to reading raw files if the RAG results are insufficient.
+- The RAG index and server are external to the repository.
+
 ### Documentation Directory Structure
 ```
 docs/

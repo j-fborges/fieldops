@@ -3,7 +3,7 @@ import pytest
 
 
 @pytest.mark.asyncio
-async def test_health_returns_200():
+async def test_health_returns_200() -> None:
     from app.main import app
 
     async with httpx.AsyncClient(
