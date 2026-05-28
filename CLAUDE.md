@@ -133,5 +133,6 @@ docs/
 - Claude must determine the previous commit message (via `git log -1 --oneline`) to
   accurately describe the change.
 - The update is staged automatically but never committed — the user commits manually.
+- **NOTAS.md formatting:** Keep each paragraph on a single line (no hard line breaks mid-paragraph). Only break for blank lines between paragraphs, headers, list items, blockquotes, and code blocks. The user co-edits this file and hard-wrapped text is difficult to reflow.
 
 

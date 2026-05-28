@@ -1,9 +1,9 @@
 #!/usr/bin/env sh
 
-# Check for unresolved merge conflicts
-files=$(git diff --cached --name-only)
-if [ -n "$files" ]; then
-  conflicts=$(echo "$files" | xargs grep -l "^<<<<<<< " 2>/dev/null)
+staged=$(git diff --cached --name-only)
+
+if [ -n "$staged" ]; then
+  conflicts=$(echo "$staged" | xargs grep -l "^<<<<<<< " 2>/dev/null || true)
   if [ -n "$conflicts" ]; then
     echo "Unresolved merge conflicts in:"
     echo "$conflicts"
