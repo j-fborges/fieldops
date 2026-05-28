@@ -182,4 +182,9 @@ código de aplicação comece a crescer. Foi criado um `.editorconfig` na raiz.
 Nos dois frontends (`admin` e `pwa`) Prettier e ESLint. No backend Black e isort. Scripts `format`, `lint` e `typecheck` foram adicionados aos três pacotes. Todos os arquivos existentes foram formatados e a baseline está limpa:
 zero erros de lint, zero erros de tipo, zero diferenças de formatação.
 
+### Commit 10 — Test Setup for All Packages
+Adiciona infraestrutura de testes nos três pacotes. Nos frontends (`admin` e
+`pwa`) foram instalados Vitest, React Testing Library, e smoke tests que renderizam o componente `App`. No backend, foi criado um smoke test com `pytest` que valida o
+endpoint `/health` retornando 200.
+
 ---
